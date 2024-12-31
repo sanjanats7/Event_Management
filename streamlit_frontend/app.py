@@ -238,7 +238,7 @@ else:
                     #           "task": None,  # This can be set if the task ID is required
                     #           "attendee": attendee_choices[selected_attendee],
                     #       }
-                    # ]
+                    # ]git
                 }
                 new_task = create_task(task_data)
                 if new_task:  # Check if task creation was successful
