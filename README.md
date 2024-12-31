@@ -17,6 +17,9 @@ It includes **Login/Register** and **Logout** functionality for access control.
 - **Django**: Backend framework for handling event and task data management.
 - **SQLite/MySQL**: For database storage of event details, user data, and tasks.
 - **Python**: Core programming language for the backend logic.
+- 
+## ER Diagram
+![ER Diagram](er.png)
 
 ## Installation
 
