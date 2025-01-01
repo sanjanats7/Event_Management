@@ -1,11 +1,11 @@
 import streamlit as st
 import requests
 
-# API Base URL
+# Base URL
 API_BASE_URL = "http://127.0.0.1:8000/api/"
 REGISTER_API = f"{API_BASE_URL}register/"
 LOGIN_API = f"{API_BASE_URL}login/"
-# Functions to interact with the Django API
+
 def get_events():
     response = requests.get(f"{API_BASE_URL}events/")
     if response.status_code == 200:
@@ -172,14 +172,11 @@ else:
     # Task Management Page
     elif page == "Task Management":
         st.header("Task Management")
-        
-        # Display Task List
         st.subheader("Task List")
         tasks = get_tasks()
         event_choices = {event['name']: event['id'] for event in get_events()}
         selected_event = st.selectbox("Select Event", options=list(event_choices.keys()))
 
-    # Filter tasks based on selected event
         filtered_tasks = [task for task in tasks if task['event'] == event_choices[selected_event]]
         completed_tasks = 0
 
@@ -222,7 +219,7 @@ else:
             st.write(f"Progress: {completed_tasks}/{total_tasks} tasks completed.")
         else:
             st.write("No tasks available for the selected event.")
-        # Add New Task
+            
         st.subheader("Add New Task")
         with st.form(key="add_task_form"):
             title = st.text_input("Title")
@@ -253,17 +250,16 @@ else:
                     # "assignments": [
                     #       {
                     #           "event": event_choices[selected_event],
-                    #           "task": None,  # This can be set if the task ID is required
+                    #           "task": None,  
                     #           "attendee": attendee_choices[selected_attendee],
                     #       }
                     # ]git
                 }
                 new_task = create_task(task_data)
-                if new_task:  # Check if task creation was successful
-            # Create an assignment
+                if new_task:  
                   assignment_data = {
                       "event": event_choices[selected_event],
-                      "task": new_task['id'],  # Use the ID of the newly created task
+                      "task": new_task['id'], 
                       "attendee": attendee_choices[selected_attendee],
                   }
                   create_assignment(assignment_data) 
@@ -272,7 +268,6 @@ else:
     elif page == "Attendee Management":
         st.header("Attendee Management")
         
-        # Display Attendee List
         st.subheader("Attendee List")
         attendees = get_attendees()
         for attendee in attendees:
@@ -282,7 +277,6 @@ else:
             if st.button(f"Delete {attendee['name']}", key=f"delete_attendee_{attendee['id']}"):
                 delete_attendee(attendee['id'])
         
-        # Add New Attendee
         st.subheader("Add New Attendee")
         with st.form(key="add_attendee_form"):
             name = st.text_input("Name")
@@ -305,7 +299,6 @@ else:
                 }
                 create_attendee(attendee_data)
         
-        # Assign Attendee to Event/Task
         st.subheader("Assign Attendee to Event/Task")
         with st.form(key="assign_attendee_form"):
           event_choices = {event['name']: event['id'] for event in get_events()}
@@ -319,7 +312,6 @@ else:
           
           submit_assignment = st.form_submit_button(label="Assign Attendee")
 
-      # Handle form submission logic
         if submit_assignment:
           assignment_data = {
               "event": event_choices[selected_event],
