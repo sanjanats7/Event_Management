@@ -38,3 +38,6 @@ It includes **Login/Register** and **Logout** functionality for access control.
 - python manage.py createsuperuser
 ### 6. Run frontend streamlit app
 - streamlit run app.py
+  
+#### Implementation video
+https://drive.google.com/drive/folders/1b0nlnNmYAi1RVZ-cHEz_rcRoHM5OphhG?usp=sharing
