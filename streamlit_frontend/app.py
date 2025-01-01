@@ -181,21 +181,30 @@ else:
 
     # Filter tasks based on selected event
         filtered_tasks = [task for task in tasks if task['event'] == event_choices[selected_event]]
-    
+        completed_tasks = 0
+
         for task in tasks:
             st.write(f"**{task['title']}**")
             st.write(f"Description: {task['description']}")
             st.write(f"Status: {task['status']}")
             status_update = st.selectbox(f"Update Status for {task['title']}", options=["Pending", "Completed"], index=0 if task['status'] == "Pending" else 1, key=f"status_{task['id']}")
-        
+            
             if st.button(f"Update Status for {task['title']}", key=f"update_status_{task['id']}"):
+                task_data = requests.get(f"{API_BASE_URL}tasks/{task['id']}/").json()
+                #log
+                print(f"Task data response: {task_data}")
                 updated_task_data = {
-                    "status": status_update
+                    "title": task_data["title"],
+                    "description": task_data["description"],
+                    "status": status_update,
+                    "event": task_data["event"],  
+                    "assignments": task_data["assignments"]  
                 }
+                print(f"{updated_task_data}")
                 response = requests.patch(f"{API_BASE_URL}tasks/{task['id']}/", json=updated_task_data)
                 if response.status_code == 200:
                     st.success(f"Status of task '{task['title']}' updated to {status_update}.")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error(f"Failed to update task status: {response.status_code} - {response.text}")
             assignments = task.get("assignemnts",[]) # Make sure `assignments` is properly queried
@@ -203,7 +212,16 @@ else:
               st.write(f"Assigned to: {assignment['attendee']['name']}")            
             if st.button(f"Delete {task['title']}", key=f"delete_task_{task['id']}"):
                 delete_task(task['id'])
-        
+            if task["status"].lower() == "completed":
+              completed_tasks += 1
+        total_tasks = len(filtered_tasks)
+        if total_tasks > 0:
+            progress_percentage = (completed_tasks / total_tasks) * 100
+            st.subheader("Task Progress")
+            st.progress(progress_percentage / 100)
+            st.write(f"Progress: {completed_tasks}/{total_tasks} tasks completed.")
+        else:
+            st.write("No tasks available for the selected event.")
         # Add New Task
         st.subheader("Add New Task")
         with st.form(key="add_task_form"):

@@ -52,12 +52,36 @@ class AttendeeAPI(APIView):
         attendee.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+# The `TaskAPI` class is a Django API view that retrieves all Task objects, serializes them using
+# `TaskSerializer`, logs the serialized data, and returns the serialized data in the response.
 class TaskAPI(APIView):
-    def get(self, request):
-        tasks = Task.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+    def get(self, request,pk=None):
+        if pk:
+            # Fetch a single task by pk
+            try:
+                task = Task.objects.get(pk=pk)
+                serializer = TaskSerializer(task)
+                return Response(serializer.data)
+            except Task.DoesNotExist:
+                return Response({"error": "Task not found"}, status=404)
+        else:
+            # Fetch all tasks
+            tasks = Task.objects.all()
+            serializer = TaskSerializer(tasks, many=True)
+            return Response(serializer.data)
 
+    def patch(self, request, pk):
+        task = Task.objects.get(id=pk)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            try:
+                serializer.save()  # This will call the custom `update` method
+                return Response(serializer.data)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      
     def post(self, request):
         serializer = TaskSerializer(data=request.data)
         if serializer.is_valid():
