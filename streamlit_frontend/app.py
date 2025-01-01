@@ -120,6 +120,11 @@ def register():
             
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
+    
+if st.sidebar.button("Logout"):
+    st.session_state["logged_in"] = False
+    st.success("You have been logged out!")
+    st.rerun()
 
 if not st.session_state["logged_in"]:
     auth_page = st.sidebar.radio("Authentication", ["Login", "Register"])
@@ -320,9 +325,4 @@ else:
           }
           create_assignment(assignment_data)
 
-            
-        if st.sidebar.button("Logout"):
-          st.session_state["logged_in"] = False
-          st.success("You have been logged out!")
-          st.rerun()
         

@@ -8,14 +8,14 @@ from django.views.decorators.csrf import csrf_exempt
 def register_user(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        username = data.get("username")
-        password = data.get("password")
-
+        username = data.get("username","").strip()
+        password = data.get("password","").strip()
+        print(f"Attempting to register user: {username}")
         if not username or not password:
             return JsonResponse({"status": "failure", "message": "Username and password are required"})
 
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"status": "failure", "message": "Username already exists"})
+        # if User.objects.filter(username__iexact=username).exists():
+        #     return JsonResponse({"status": "failure", "message": "Username already exists"})
 
         hashed_password = make_password(password)
         user = User.objects.create(username=username, password=hashed_password)
